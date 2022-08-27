@@ -10,6 +10,7 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public Text bestScoreText;
     public Text ScoreText;
     public GameObject GameOverText;
     
@@ -18,10 +19,26 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
+    private string username = "Player";
+
     
     // Start is called before the first frame update
     void Start()
     {
+        if (GameManager.Instance.username != "")
+        {
+            username = GameManager.Instance.username;
+        }
+
+        GameManager.SaveData data = GameManager.Instance.Load();
+        if (data != null)
+        {
+            bestScoreText.text = string.Format("Best Score: {0} : {1}", data.username, data.score);
+        } else
+        {
+            bestScoreText.text = "Best Score: N/A";
+        }
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -70,6 +87,7 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        GameManager.Instance.Save(new GameManager.SaveData(username: username, score: m_Points));
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
